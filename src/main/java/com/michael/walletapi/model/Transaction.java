@@ -16,7 +16,6 @@ public class Transaction {
     private double amount;
     private LocalDateTime created_at;
 
-    // transaction_type_id
     @OneToOne
     @JoinColumn(name = "transaction_type_id")
     private TransactionType transactionType;
