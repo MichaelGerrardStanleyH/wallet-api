@@ -19,9 +19,19 @@ public class UserController {
         return this.userService.getAllUser();
     }
 
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id){
+        return this.userService.getUserById(id);
+    }
+
     @PostMapping()
     public User createUser(@RequestBody UserDTO userDTO){
         return this.userService.createUser(userDTO);
+    }
+
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO){
+        return this.userService.updateUser(id, userDTO);
     }
 
     @DeleteMapping("/{id}")

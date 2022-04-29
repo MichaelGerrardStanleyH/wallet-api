@@ -13,6 +13,6 @@ public class UserDTO {
     private String name;
     private LocalDate dob;
     private LocalDateTime created_at;
-    private int address_id;
+    private String address;
     private Wallet wallet;
 }
