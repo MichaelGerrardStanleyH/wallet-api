@@ -4,6 +4,7 @@ import com.michael.walletapi.model.Address;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.UserDTO;
+import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.repository.AddressRepository;
 import com.michael.walletapi.repository.UserRepository;
 import com.michael.walletapi.repository.WalletRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,7 +28,11 @@ public class UserServiceImpl {
     @Autowired
     AddressRepository addressRepository;
 
-    LocalDateTime localDateTime = LocalDateTime.now();
+    public LocalDateTime getTimeNow(){
+        return LocalDateTime.now();
+    }
+
+
 
     public List<User> getAllUser() {
         return this.userRepository.findAll();
@@ -39,14 +45,14 @@ public class UserServiceImpl {
     public User createUser(UserDTO userDTO) {
         Address newAddress = Address.builder()
                 .address(userDTO.getAddress())
-                .created_at(localDateTime)
+                .created_at(getTimeNow())
                 .build();
 
         Address savedAddress = this.addressRepository.save(newAddress);
 
         User newUser = User.builder().name(userDTO.getName())
                 .dob(userDTO.getDob())
-                .created_at(localDateTime)
+                .created_at(getTimeNow())
                 .address(savedAddress)
                 .build();
 
@@ -55,7 +61,7 @@ public class UserServiceImpl {
         Wallet newWallet = Wallet.builder()
                 .name("Kantong Utama")
                 .balance(0)
-                .created_at(localDateTime)
+                .created_at(getTimeNow())
                 .user(newUser)
                 .build();
 
@@ -80,4 +86,19 @@ public class UserServiceImpl {
         this.userRepository.deleteById(id);
     }
 
+    public User addWallet(Long id, WalletDTO walletDTO) {
+        User existUser = this.userRepository.findById(id).get();
+
+        Wallet newWallet = Wallet.builder()
+                .name(walletDTO.getName())
+                .user(existUser)
+                .created_at(getTimeNow())
+                .build();
+
+        Wallet savedWallet = this.walletRepository.save(newWallet);
+
+        existUser.addWallet(savedWallet);
+
+        return this.userRepository.save(existUser);
+    }
 }
