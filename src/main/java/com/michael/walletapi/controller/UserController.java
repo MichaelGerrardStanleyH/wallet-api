@@ -1,6 +1,7 @@
 package com.michael.walletapi.controller;
 
 import com.michael.walletapi.model.User;
+import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.service.UserServiceImpl;
@@ -43,6 +44,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void  deleteUser(@PathVariable Long id){
          this.userService.deleteUser(id);
+    }
+
+    @PostMapping("/{userId}/topup/{walletId}")
+    public void topup(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @RequestBody TransactionDTO transactionDTO){
+        this.userService.topUp(userId, walletId, transactionDTO);
     }
 
 }

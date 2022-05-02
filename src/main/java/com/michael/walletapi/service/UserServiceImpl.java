@@ -3,18 +3,16 @@ package com.michael.walletapi.service;
 import com.michael.walletapi.model.Address;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
+import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.repository.AddressRepository;
 import com.michael.walletapi.repository.UserRepository;
 import com.michael.walletapi.repository.WalletRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,16 +21,14 @@ public class UserServiceImpl {
     UserRepository userRepository;
 
     @Autowired
-    WalletRepository walletRepository;
+    AddressRepository addressRepository;
 
     @Autowired
-    AddressRepository addressRepository;
+    WalletServiceImpl walletService;
 
     public LocalDateTime getTimeNow(){
         return LocalDateTime.now();
     }
-
-
 
     public List<User> getAllUser() {
         return this.userRepository.findAll();
@@ -58,16 +54,9 @@ public class UserServiceImpl {
 
         User savedUser = this.userRepository.save(newUser);
 
-        Wallet newWallet = Wallet.builder()
-                .name("Kantong Utama")
-                .balance(0)
-                .created_at(getTimeNow())
-                .user(newUser)
-                .build();
+        Wallet newWallet = this.walletService.createWallet(savedUser);
 
-        Wallet savedWallet = this.walletRepository.save(newWallet);
-
-        savedUser.setWallet(List.of(savedWallet));
+        savedUser.setWallet(List.of(newWallet));
 
         return savedUser;
     }
@@ -89,16 +78,16 @@ public class UserServiceImpl {
     public User addWallet(Long id, WalletDTO walletDTO) {
         User existUser = this.userRepository.findById(id).get();
 
-        Wallet newWallet = Wallet.builder()
-                .name(walletDTO.getName())
-                .user(existUser)
-                .created_at(getTimeNow())
-                .build();
+        Wallet newWallet = this.walletService.addWallet(existUser, walletDTO);
 
-        Wallet savedWallet = this.walletRepository.save(newWallet);
+        existUser.addWallet(newWallet);
 
-        existUser.addWallet(savedWallet);
+        return existUser;
+    }
 
-        return this.userRepository.save(existUser);
+    public void topUp(Long userId, Long walletId, TransactionDTO transactionDTO) {
+        // exception
+
+        this.walletService.topUp(walletId, transactionDTO);
     }
 }

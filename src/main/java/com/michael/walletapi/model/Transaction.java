@@ -1,6 +1,10 @@
 package com.michael.walletapi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -8,6 +12,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +27,7 @@ public class Transaction {
     @JoinColumn(name = "transaction_type_id")
     private TransactionType transactionType;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
