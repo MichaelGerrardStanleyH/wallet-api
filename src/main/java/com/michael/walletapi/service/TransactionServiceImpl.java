@@ -22,7 +22,7 @@ public class TransactionServiceImpl {
         return LocalDateTime.now();
     }
 
-    public Transaction createTransaction(Wallet existWallet, TransactionDTO transactionDTO){
+    public Transaction createTopupTransaction(Wallet existWallet, TransactionDTO transactionDTO){
         TransactionType existType = this.transactionTypeService.getTransactionTypeById((long) transactionDTO.getTransaction_type_id());
 
         Transaction newTransaction = Transaction.builder()
@@ -34,5 +34,29 @@ public class TransactionServiceImpl {
                 .build();
 
         return this.transactionRepository.save(newTransaction);
+    }
+
+    public void createTransferTransaction(Wallet existWalletSender, Wallet existWalletRecipient, TransactionDTO transactionDTO) {
+        TransactionType existType = this.transactionTypeService.getTransactionTypeById((long) transactionDTO.getTransaction_type_id());
+
+        Transaction newTransactionSender = Transaction.builder()
+                .amount(transactionDTO.getAmount())
+                .transactionType(existType)
+                .description(transactionDTO.getDescription())
+                .wallet(existWalletSender)
+                .created_at(getTimeNow())
+                .build();
+
+        Transaction newTransactionRecipient = Transaction.builder()
+                .amount(transactionDTO.getAmount())
+                .transactionType(existType)
+                .description(transactionDTO.getDescription())
+                .wallet(existWalletRecipient)
+                .created_at(getTimeNow())
+                .build();
+
+        this.transactionRepository.save(newTransactionRecipient);
+
+        this.transactionRepository.save(newTransactionSender);
     }
 }

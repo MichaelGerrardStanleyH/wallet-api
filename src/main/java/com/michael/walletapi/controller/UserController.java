@@ -51,4 +51,9 @@ public class UserController {
         this.userService.topUp(userId, walletId, transactionDTO);
     }
 
+    @PostMapping("/{userId}/transfer/{walletId}")
+    public void transfer(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @RequestBody TransactionDTO transactionDTO){
+        this.userService.transfer(userId, walletId, transactionDTO);
+    }
+
 }

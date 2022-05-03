@@ -90,4 +90,10 @@ public class UserServiceImpl {
 
         this.walletService.topUp(walletId, transactionDTO);
     }
+
+    public void transfer(Long userId, Long walletId, TransactionDTO transactionDTO) {
+        // exception
+
+        this.walletService.transfer(walletId, transactionDTO);
+    }
 }

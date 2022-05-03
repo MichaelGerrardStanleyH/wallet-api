@@ -46,10 +46,23 @@ public class WalletServiceImpl {
     public void topUp(Long walletId, TransactionDTO transactionDTO) {
         Wallet existWallet = this.walletRepository.getById(walletId);
 
-        this.transactionService.createTransaction(existWallet, transactionDTO);
+        this.transactionService.createTopupTransaction(existWallet, transactionDTO);
 
         existWallet.setBalance(existWallet.getBalance() + transactionDTO.getAmount());
 
         this.walletRepository.save(existWallet);
+    }
+
+    public void transfer(Long walletId, TransactionDTO transactionDTO) {
+        Wallet existWalletSender = this.walletRepository.getById(walletId);
+        Wallet existWalletRecipient = this.walletRepository.getById((long) transactionDTO.getWallet_id());
+
+        this.transactionService.createTransferTransaction(existWalletSender, existWalletRecipient, transactionDTO);
+
+        existWalletSender.setBalance(existWalletSender.getBalance() - transactionDTO.getAmount());
+        existWalletRecipient.setBalance(existWalletRecipient.getBalance() + transactionDTO.getAmount());
+
+        this.walletRepository.save(existWalletRecipient);
+        this.walletRepository.save(existWalletSender);
     }
 }
