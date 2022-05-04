@@ -1,5 +1,6 @@
 package com.michael.walletapi.service;
 
+import com.michael.walletapi.exception.InsufficientBalanceException;
 import com.michael.walletapi.model.Address;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
@@ -34,8 +35,8 @@ public class UserServiceImpl {
         return this.userRepository.findAll();
     }
 
-    public User getUserById(Long id) {
-        return this.userRepository.findById(id).get();
+    public User getUserById(Long id) throws InsufficientBalanceException {
+        return this.userRepository.findById(id).orElseThrow(() -> new InsufficientBalanceException("User not found"));
     }
 
     public User createUser(UserDTO userDTO) {
@@ -62,7 +63,7 @@ public class UserServiceImpl {
     }
 
     public User updateUser(Long id, UserDTO userDTO) {
-        User existUser = this.getUserById(id);
+        User existUser = this.userRepository.getById(id);
 
         existUser.setName(userDTO.getName());
         existUser.setDob(userDTO.getDob());

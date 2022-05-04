@@ -1,5 +1,6 @@
 package com.michael.walletapi.controller;
 
+import com.michael.walletapi.exception.InsufficientBalanceException;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id){
+    public User getUserById(@PathVariable Long id) throws InsufficientBalanceException {
         return this.userService.getUserById(id);
     }
 
