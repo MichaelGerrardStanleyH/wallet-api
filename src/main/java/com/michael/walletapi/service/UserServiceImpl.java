@@ -1,7 +1,9 @@
 package com.michael.walletapi.service;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.michael.walletapi.exception.InsufficientBalanceException;
 import com.michael.walletapi.model.Address;
+import com.michael.walletapi.model.BaseResponse;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.TransactionDTO;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl {
@@ -32,11 +35,23 @@ public class UserServiceImpl {
     }
 
     public List<User> getAllUser() {
-        return this.userRepository.findAll();
+        List<User> listUser = this.userRepository.findAll();
+
+        if(listUser.isEmpty()){
+            return null;
+        }else{
+            return listUser;
+        }
     }
 
-    public User getUserById(Long id) throws InsufficientBalanceException {
-        return this.userRepository.findById(id).orElseThrow(() -> new InsufficientBalanceException("User not found"));
+    public User getUserById(Long id){
+        Optional<User> optionalUser = this.userRepository.findById(id);
+
+        if(optionalUser.isEmpty()){
+            return null;
+        }else{
+            return optionalUser.get();
+        }
     }
 
     public User createUser(UserDTO userDTO) {
@@ -59,11 +74,24 @@ public class UserServiceImpl {
 
         savedUser.setWallet(List.of(newWallet));
 
-        return savedUser;
+        if(savedUser.getId() == null){
+            return null;
+        }else{
+            return savedUser;
+        }
+
     }
 
     public User updateUser(Long id, UserDTO userDTO) {
-        User existUser = this.userRepository.getById(id);
+        Optional<User> optionalUser = this.userRepository.findById(id);
+
+        User existUser;
+
+        if (optionalUser.isEmpty()) {
+            return null;
+        } else {
+            existUser = optionalUser.get();
+        }
 
         existUser.setName(userDTO.getName());
         existUser.setDob(userDTO.getDob());
