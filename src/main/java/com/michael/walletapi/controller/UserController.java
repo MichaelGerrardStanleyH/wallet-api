@@ -3,6 +3,7 @@ package com.michael.walletapi.controller;
 import com.michael.walletapi.exception.InsufficientBalanceException;
 import com.michael.walletapi.model.BaseResponse;
 import com.michael.walletapi.model.User;
+import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
@@ -102,7 +103,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/{id}/wallet")
+    @PostMapping("/{id}/wallets")
     public User addWallet(@PathVariable Long id, @RequestBody WalletDTO walletDTO){
         return this.userService.addWallet(id, walletDTO);
     }
@@ -116,6 +117,47 @@ public class UserController {
     @PostMapping("/{userId}/transfer/{walletId}")
     public void transfer(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @RequestBody TransactionDTO transactionDTO){
         this.userService.transfer(userId, walletId, transactionDTO);
+    }
+
+    @GetMapping("/{userId}/wallets/{walletId}")
+    public ResponseEntity<BaseResponse<Wallet>> getUsersWalletById(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId){
+        BaseResponse<Wallet> baseResponse = new BaseResponse<>();
+
+        Wallet wallet = this.userService.getUsersWalletById(userId, walletId);
+
+        if(wallet == null ){
+            baseResponse.setMessage("Failed");
+            baseResponse.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
+        }else{
+            baseResponse.setMessage("Success");
+            baseResponse.setSuccess(true);
+            return ResponseEntity.status(HttpStatus.OK).body(baseResponse);
+        }
+    }
+
+    @PutMapping("/{userId}/wallets/{walletId}")
+    public ResponseEntity<BaseResponse<Wallet>> updateWallet(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @RequestBody WalletDTO walletDTO){
+        BaseResponse<Wallet> baseResponse = new BaseResponse<>();
+
+        Wallet wallet = this.userService.updateUsersWallet(userId, walletId, walletDTO);
+
+        baseResponse.setData(wallet);
+
+        if(wallet == null ){
+            baseResponse.setMessage("Failed");
+            baseResponse.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
+        }else{
+            baseResponse.setMessage("Success");
+            baseResponse.setSuccess(true);
+            return ResponseEntity.status(HttpStatus.OK).body(baseResponse);
+        }
+    }
+
+    @DeleteMapping("/{userId}/wallets/{walletId}")
+    public ResponseEntity<Void> deleteUsersWallet(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId){
+        return this.userService.deleteUsersWallet(userId, walletId);
     }
 
 }

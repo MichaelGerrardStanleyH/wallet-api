@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class WalletServiceImpl {
@@ -22,6 +23,20 @@ public class WalletServiceImpl {
         return LocalDateTime.now();
     }
 
+    public Wallet saveWallet(Wallet wallet){
+        return this.walletRepository.save(wallet);
+    }
+
+    public Wallet getWalletById(Long id){
+        Optional<Wallet> optionalWallet = this.walletRepository.findById(id);
+
+        if(optionalWallet.isEmpty()){
+            return null;
+        }else{
+            return optionalWallet.get();
+        }
+    }
+
     public Wallet createWallet(User savedUser) {
         Wallet newWallet = Wallet.builder()
                 .name("Kantong Utama")
@@ -31,6 +46,9 @@ public class WalletServiceImpl {
                 .build();
 
         return this.walletRepository.save(newWallet);
+    }
+    public void deleteWalletById(Long id){
+        this.walletRepository.deleteById(id);
     }
 
     public Wallet addWallet(User existUser, WalletDTO walletDTO) {
@@ -64,5 +82,13 @@ public class WalletServiceImpl {
 
         this.walletRepository.save(existWalletRecipient);
         this.walletRepository.save(existWalletSender);
+    }
+
+    public Wallet updateUserWallet(Long walletId, WalletDTO walletDTO) {
+        Wallet existWallet = this.getWalletById(walletId);
+
+        existWallet.setName(walletDTO.getName());
+
+        return this.walletRepository.save(existWallet);
     }
 }

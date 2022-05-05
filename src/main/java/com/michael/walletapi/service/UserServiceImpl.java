@@ -13,6 +13,8 @@ import com.michael.walletapi.repository.AddressRepository;
 import com.michael.walletapi.repository.UserRepository;
 import com.michael.walletapi.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -125,4 +127,39 @@ public class UserServiceImpl {
 
         this.walletService.transfer(walletId, transactionDTO);
     }
+
+    public Wallet updateUsersWallet(Long userId, Long walletId, WalletDTO walletDTO) {
+        User existUser = this.getUserById(userId);
+
+        Wallet existWallet = this.walletService.getWalletById(walletId);
+
+        if (existUser.getWallet().contains(existWallet)) {
+
+            return this.walletService.updateUserWallet(walletId, walletDTO);
+        }else{
+            return null;
+        }
+    }
+
+    public Wallet getUsersWalletById(Long userId, Long walletId) {
+        User existUser = this.getUserById(userId);
+
+        Wallet existWallet = this.walletService.getWalletById(walletId);
+
+        if (existUser.getWallet().contains(existWallet)) {
+            return this.walletService.saveWallet(existWallet);
+        }else{
+            return null;
+        }
+    }
+
+    public ResponseEntity<Void> deleteUsersWallet(Long userId, Long walletId){
+        if(this.getUsersWalletById(userId, walletId) == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }else {
+            this.walletService.deleteWalletById(walletId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+    }
 }
+

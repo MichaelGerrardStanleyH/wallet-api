@@ -34,4 +34,6 @@ public class User {
     public void addWallet(Wallet wallet){
         this.wallet.add(wallet);
     }
+
+
 }
