@@ -2,11 +2,13 @@ package com.michael.walletapi.controller;
 
 import com.michael.walletapi.exception.InsufficientBalanceException;
 import com.michael.walletapi.model.BaseResponse;
+import com.michael.walletapi.model.Transaction;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
+import com.michael.walletapi.repository.WalletRepository;
 import com.michael.walletapi.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ import java.util.List;
 public class UserController {
     @Autowired
     UserServiceImpl userService;
+
+    @Autowired
+    WalletRepository walletRepository;
 
     @GetMapping()
     public ResponseEntity<BaseResponse<List<User>>> getAllUser(){
@@ -104,19 +109,55 @@ public class UserController {
     }
 
     @PostMapping("/{id}/wallets")
-    public User addWallet(@PathVariable Long id, @RequestBody WalletDTO walletDTO){
-        return this.userService.addWallet(id, walletDTO);
+    public ResponseEntity<BaseResponse<User>> addWallet(@PathVariable Long id, @RequestBody WalletDTO walletDTO){
+        BaseResponse<User> baseResponse = new BaseResponse<>();
+
+        User user = this.userService.addWallet(id, walletDTO);
+
+        baseResponse.setMessage("Success");
+        baseResponse.setSuccess(true);
+        baseResponse.setData(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(baseResponse);
+
     }
 
-
     @PostMapping("/{userId}/topup/{walletId}")
-    public void topup(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @RequestBody TransactionDTO transactionDTO){
-        this.userService.topUp(userId, walletId, transactionDTO);
+    public ResponseEntity<BaseResponse<Transaction>> topUp(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @RequestBody TransactionDTO transactionDTO){
+        BaseResponse<Transaction> baseResponse = new BaseResponse<>();
+
+        Transaction transaction = this.userService.topUp(userId, walletId, transactionDTO);
+
+        baseResponse.setData(transaction);
+
+        if(transaction == null ){
+            baseResponse.setMessage("Failed");
+            baseResponse.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
+        }else{
+            baseResponse.setMessage("Success");
+            baseResponse.setSuccess(true);
+            return ResponseEntity.status(HttpStatus.OK).body(baseResponse);
+        }
+
     }
 
     @PostMapping("/{userId}/transfer/{walletId}")
-    public void transfer(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @RequestBody TransactionDTO transactionDTO){
-        this.userService.transfer(userId, walletId, transactionDTO);
+    public ResponseEntity<BaseResponse<Transaction>> transfer(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @RequestBody TransactionDTO transactionDTO){
+        BaseResponse<Transaction> baseResponse = new BaseResponse<>();
+
+        Transaction transfer = this.userService.transfer(userId, walletId, transactionDTO);
+
+        baseResponse.setData(transfer);
+
+        if(transfer == null ){
+            baseResponse.setMessage("Failed");
+            baseResponse.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
+        }else{
+            baseResponse.setMessage("Success");
+            baseResponse.setSuccess(true);
+            return ResponseEntity.status(HttpStatus.OK).body(baseResponse);
+        }
     }
 
     @GetMapping("/{userId}/wallets/{walletId}")
@@ -124,6 +165,8 @@ public class UserController {
         BaseResponse<Wallet> baseResponse = new BaseResponse<>();
 
         Wallet wallet = this.userService.getUsersWalletById(userId, walletId);
+
+        baseResponse.setData(wallet);
 
         if(wallet == null ){
             baseResponse.setMessage("Failed");

@@ -25,6 +25,10 @@ public class TransactionServiceImpl {
     public Transaction createTopupTransaction(Wallet existWallet, TransactionDTO transactionDTO){
         TransactionType existType = this.transactionTypeService.getTransactionTypeById((long) transactionDTO.getTransaction_type_id());
 
+        if(existType == null){
+            return null;
+        }
+
         Transaction newTransaction = Transaction.builder()
                 .amount(transactionDTO.getAmount())
                 .transactionType(existType)
@@ -36,8 +40,12 @@ public class TransactionServiceImpl {
         return this.transactionRepository.save(newTransaction);
     }
 
-    public void createTransferTransaction(Wallet existWalletSender, Wallet existWalletRecipient, TransactionDTO transactionDTO) {
+    public Transaction createTransferTransaction(Wallet existWalletSender, Wallet existWalletRecipient, TransactionDTO transactionDTO) {
         TransactionType existType = this.transactionTypeService.getTransactionTypeById((long) transactionDTO.getTransaction_type_id());
+
+        if(existType == null){
+            return null;
+        }
 
         Transaction newTransactionSender = Transaction.builder()
                 .amount(transactionDTO.getAmount())
@@ -57,6 +65,6 @@ public class TransactionServiceImpl {
 
         this.transactionRepository.save(newTransactionRecipient);
 
-        this.transactionRepository.save(newTransactionSender);
+        return this.transactionRepository.save(newTransactionSender);
     }
 }

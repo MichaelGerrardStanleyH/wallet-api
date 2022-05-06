@@ -1,5 +1,6 @@
 package com.michael.walletapi.service;
 
+import com.michael.walletapi.model.Transaction;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.TransactionDTO;
@@ -61,27 +62,47 @@ public class WalletServiceImpl {
         return this.walletRepository.save(newWallet);
     }
 
-    public void topUp(Long walletId, TransactionDTO transactionDTO) {
+    public Transaction topUp(Long walletId, TransactionDTO transactionDTO) {
         Wallet existWallet = this.walletRepository.getById(walletId);
 
-        this.transactionService.createTopupTransaction(existWallet, transactionDTO);
+        Transaction topUpTransaction = this.transactionService.createTopupTransaction(existWallet, transactionDTO);
+
+        if(topUpTransaction == null){
+            return null;
+        }
 
         existWallet.setBalance(existWallet.getBalance() + transactionDTO.getAmount());
 
         this.walletRepository.save(existWallet);
+
+        return topUpTransaction;
     }
 
-    public void transfer(Long walletId, TransactionDTO transactionDTO) {
+    public Transaction transfer(Long walletId, TransactionDTO transactionDTO) {
+        if(this.getWalletById((long) transactionDTO.getWallet_id()) == null){
+            return null;
+        }
+
         Wallet existWalletSender = this.walletRepository.getById(walletId);
         Wallet existWalletRecipient = this.walletRepository.getById((long) transactionDTO.getWallet_id());
 
-        this.transactionService.createTransferTransaction(existWalletSender, existWalletRecipient, transactionDTO);
+        if(existWalletSender.getBalance() < transactionDTO.getAmount()){
+            return null;
+        }
+
+        Transaction transactionSender = this.transactionService.createTransferTransaction(existWalletSender, existWalletRecipient, transactionDTO);
+
+        if(transactionSender == null){
+            return null;
+        }
 
         existWalletSender.setBalance(existWalletSender.getBalance() - transactionDTO.getAmount());
         existWalletRecipient.setBalance(existWalletRecipient.getBalance() + transactionDTO.getAmount());
 
         this.walletRepository.save(existWalletRecipient);
         this.walletRepository.save(existWalletSender);
+
+        return transactionSender;
     }
 
     public Wallet updateUserWallet(Long walletId, WalletDTO walletDTO) {
@@ -90,5 +111,9 @@ public class WalletServiceImpl {
         existWallet.setName(walletDTO.getName());
 
         return this.walletRepository.save(existWallet);
+    }
+
+    public Wallet getUsersWallet(Long walletId, User existUser) {
+        return this.walletRepository.findByIdAndUser(walletId, existUser);
     }
 }

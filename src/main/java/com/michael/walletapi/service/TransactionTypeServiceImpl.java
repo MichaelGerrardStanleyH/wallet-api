@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TransactionTypeServiceImpl {
@@ -23,7 +24,13 @@ public class TransactionTypeServiceImpl {
     }
 
     public TransactionType getTransactionTypeById(Long id){
-        return this.transactionTypeRepository.getById(id);
+        Optional<TransactionType> optionalType = this.transactionTypeRepository.findById(id);
+
+        if(optionalType.isEmpty()){
+            return null;
+        }else{
+            return optionalType.get();
+        }
     }
 
     public TransactionType createTransactionType(TransactionTypeDTO transactionTypeDTO) {

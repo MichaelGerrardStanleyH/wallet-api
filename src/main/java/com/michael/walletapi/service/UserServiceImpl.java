@@ -2,10 +2,7 @@ package com.michael.walletapi.service;
 
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.michael.walletapi.exception.InsufficientBalanceException;
-import com.michael.walletapi.model.Address;
-import com.michael.walletapi.model.BaseResponse;
-import com.michael.walletapi.model.User;
-import com.michael.walletapi.model.Wallet;
+import com.michael.walletapi.model.*;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
@@ -31,6 +28,8 @@ public class UserServiceImpl {
 
     @Autowired
     WalletServiceImpl walletService;
+
+
 
     public LocalDateTime getTimeNow(){
         return LocalDateTime.now();
@@ -116,25 +115,29 @@ public class UserServiceImpl {
         return existUser;
     }
 
-    public void topUp(Long userId, Long walletId, TransactionDTO transactionDTO) {
+    public Transaction topUp(Long userId, Long walletId, TransactionDTO transactionDTO) {
         // exception
+        if(this.getUserById(userId) == null && this.walletService.getUsersWallet(walletId, this.getUserById(userId)) == null){
+            return null;
+        }
 
-        this.walletService.topUp(walletId, transactionDTO);
+        return this.walletService.topUp(walletId, transactionDTO);
     }
 
-    public void transfer(Long userId, Long walletId, TransactionDTO transactionDTO) {
+    public Transaction transfer(Long userId, Long walletId, TransactionDTO transactionDTO) {
         // exception
 
-        this.walletService.transfer(walletId, transactionDTO);
+        if(this.getUserById(userId) == null && this.walletService.getUsersWallet(walletId, this.getUserById(userId)) == null){
+            return null;
+        }
+
+        return this.walletService.transfer(walletId, transactionDTO);
     }
 
     public Wallet updateUsersWallet(Long userId, Long walletId, WalletDTO walletDTO) {
-        User existUser = this.getUserById(userId);
+        Wallet existWallet = this.getUsersWalletById(userId, walletId);
 
-        Wallet existWallet = this.walletService.getWalletById(walletId);
-
-        if (existUser.getWallet().contains(existWallet)) {
-
+        if (existWallet != null) {
             return this.walletService.updateUserWallet(walletId, walletDTO);
         }else{
             return null;
@@ -142,15 +145,9 @@ public class UserServiceImpl {
     }
 
     public Wallet getUsersWalletById(Long userId, Long walletId) {
-        User existUser = this.getUserById(userId);
+        User user = this.getUserById(userId);
 
-        Wallet existWallet = this.walletService.getWalletById(walletId);
-
-        if (existUser.getWallet().contains(existWallet)) {
-            return this.walletService.saveWallet(existWallet);
-        }else{
-            return null;
-        }
+        return this.walletService.getUsersWallet(walletId, user);
     }
 
     public ResponseEntity<Void> deleteUsersWallet(Long userId, Long walletId){
