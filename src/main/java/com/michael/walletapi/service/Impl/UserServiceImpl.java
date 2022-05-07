@@ -1,14 +1,13 @@
-package com.michael.walletapi.service;
+package com.michael.walletapi.service.Impl;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
-import com.michael.walletapi.exception.InsufficientBalanceException;
 import com.michael.walletapi.model.*;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.repository.AddressRepository;
 import com.michael.walletapi.repository.UserRepository;
-import com.michael.walletapi.repository.WalletRepository;
+import com.michael.walletapi.service.UserService;
+import com.michael.walletapi.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
 
@@ -27,9 +26,7 @@ public class UserServiceImpl {
     AddressRepository addressRepository;
 
     @Autowired
-    WalletServiceImpl walletService;
-
-
+    WalletService walletService;
 
     public LocalDateTime getTimeNow(){
         return LocalDateTime.now();

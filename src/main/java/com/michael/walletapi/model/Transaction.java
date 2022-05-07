@@ -23,6 +23,9 @@ public class Transaction {
     private double amount;
     private LocalDateTime created_at;
 
+    private Long fromWallet;
+    private Long toWallet;
+
     @OneToOne
     @JoinColumn(name = "transaction_type_id")
     private TransactionType transactionType;

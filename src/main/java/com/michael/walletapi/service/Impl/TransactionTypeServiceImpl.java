@@ -1,8 +1,9 @@
-package com.michael.walletapi.service;
+package com.michael.walletapi.service.Impl;
 
 import com.michael.walletapi.model.TransactionType;
 import com.michael.walletapi.model.dto.TransactionTypeDTO;
 import com.michael.walletapi.repository.TransactionTypeRepository;
+import com.michael.walletapi.service.TransactionTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TransactionTypeServiceImpl {
+public class TransactionTypeServiceImpl implements TransactionTypeService {
     @Autowired
     TransactionTypeRepository transactionTypeRepository;
 

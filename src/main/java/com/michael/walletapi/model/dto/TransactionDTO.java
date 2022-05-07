@@ -14,6 +14,6 @@ public class TransactionDTO {
     private String description;
     private double amount;
     private LocalDateTime created_at;
-    private int transaction_type_id;
-    private int wallet_id;
+    private Long transaction_type_id;
+    private Long wallet_id;
 }

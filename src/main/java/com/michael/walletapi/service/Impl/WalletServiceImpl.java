@@ -1,4 +1,4 @@
-package com.michael.walletapi.service;
+package com.michael.walletapi.service.Impl;
 
 import com.michael.walletapi.model.Transaction;
 import com.michael.walletapi.model.User;
@@ -6,6 +6,9 @@ import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.repository.WalletRepository;
+import com.michael.walletapi.service.Impl.TransactionServiceImpl;
+import com.michael.walletapi.service.TransactionService;
+import com.michael.walletapi.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +16,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-public class WalletServiceImpl {
+public class WalletServiceImpl implements WalletService {
     @Autowired
     WalletRepository walletRepository;
 
     @Autowired
-    TransactionServiceImpl transactionService;
+    TransactionService transactionService;
 
     public LocalDateTime getTimeNow(){
         return LocalDateTime.now();

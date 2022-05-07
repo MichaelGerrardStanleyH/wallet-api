@@ -1,6 +1,5 @@
 package com.michael.walletapi.controller;
 
-import com.michael.walletapi.exception.InsufficientBalanceException;
 import com.michael.walletapi.model.BaseResponse;
 import com.michael.walletapi.model.Transaction;
 import com.michael.walletapi.model.User;
@@ -8,8 +7,7 @@ import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
-import com.michael.walletapi.repository.WalletRepository;
-import com.michael.walletapi.service.UserServiceImpl;
+import com.michael.walletapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +19,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     @Autowired
-    UserServiceImpl userService;
-
-    @Autowired
-    WalletRepository walletRepository;
+    UserService userService;
 
     @GetMapping()
     public ResponseEntity<BaseResponse<List<User>>> getAllUser(){
@@ -200,7 +195,9 @@ public class UserController {
 
     @DeleteMapping("/{userId}/wallets/{walletId}")
     public ResponseEntity<Void> deleteUsersWallet(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId){
-        return this.userService.deleteUsersWallet(userId, walletId);
+        this.userService.deleteUsersWallet(userId, walletId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

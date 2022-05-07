@@ -1,22 +1,24 @@
-package com.michael.walletapi.service;
+package com.michael.walletapi.service.Impl;
 
 import com.michael.walletapi.model.Transaction;
 import com.michael.walletapi.model.TransactionType;
 import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.repository.TransactionRepository;
+import com.michael.walletapi.service.TransactionService;
+import com.michael.walletapi.service.TransactionTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
-public class TransactionServiceImpl {
+public class TransactionServiceImpl implements TransactionService {
     @Autowired
     TransactionRepository transactionRepository;
 
     @Autowired
-    TransactionTypeServiceImpl transactionTypeService;
+    TransactionTypeService transactionTypeService;
 
     public LocalDateTime getTimeNow(){
         return LocalDateTime.now();
@@ -33,6 +35,7 @@ public class TransactionServiceImpl {
                 .amount(transactionDTO.getAmount())
                 .transactionType(existType)
                 .description(transactionDTO.getDescription())
+                .toWallet(existWallet.getId())
                 .wallet(existWallet)
                 .created_at(getTimeNow())
                 .build();
@@ -51,6 +54,8 @@ public class TransactionServiceImpl {
                 .amount(transactionDTO.getAmount())
                 .transactionType(existType)
                 .description(transactionDTO.getDescription())
+                .fromWallet(existWalletSender.getId())
+                .toWallet(existWalletRecipient.getId())
                 .wallet(existWalletSender)
                 .created_at(getTimeNow())
                 .build();
@@ -59,6 +64,8 @@ public class TransactionServiceImpl {
                 .amount(transactionDTO.getAmount())
                 .transactionType(existType)
                 .description(transactionDTO.getDescription())
+                .fromWallet(existWalletSender.getId())
+                .toWallet(existWalletRecipient.getId())
                 .wallet(existWalletRecipient)
                 .created_at(getTimeNow())
                 .build();
