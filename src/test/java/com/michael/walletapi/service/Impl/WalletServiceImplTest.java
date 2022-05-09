@@ -1,7 +1,10 @@
 package com.michael.walletapi.service.Impl;
 
+import com.michael.walletapi.model.Transaction;
+import com.michael.walletapi.model.TransactionType;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
+import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.repository.TransactionRepository;
 import com.michael.walletapi.repository.TransactionTypeRepository;
@@ -31,10 +34,10 @@ public class WalletServiceImplTest {
     WalletRepository walletRepository;
 
     @Mock
-    TransactionRepository transactionRepository;
+    TransactionServiceImpl transactionService;
 
     @Mock
-    TransactionTypeRepository typeRepository;
+    TransactionTypeServiceImpl typeService;
 
     @Before
     public void setUp(){
@@ -108,23 +111,31 @@ public class WalletServiceImplTest {
 
     @Test
     public void topUp_willSuccess(){
-//        // Given
-//        Long walletId = easyRandom.nextLong();
-//        Wallet wallet = easyRandom.nextObject(Wallet.class);
-//        TransactionDTO transactionDTO = easyRandom.nextObject(TransactionDTO.class);
-//        Transaction transaction = easyRandom.nextObject(Transaction.class);
-//        TransactionType transactionType = easyRandom.nextObject(TransactionType.class);
-//
-//        when(this.walletRepository.getById(walletId)).thenReturn(wallet);
-//        when(this.typeRepository.findById(id)).thenReturn(Optional.of(transactionType));
-//        when(this.transactionRepository.save(any())).thenReturn(transaction);
-//        when(this.walletRepository.save(any())).thenReturn(transaction);
-//
-//        // When
-//        var result = this.walletService.topUp(walletId, transactionDTO);
-//
-//        // Then
-//        assertEquals(transaction, result);
+        // Given
+        Long walletId = easyRandom.nextLong();
+        TransactionDTO transactionDTO = easyRandom.nextObject(TransactionDTO.class);
+        Transaction transaction = easyRandom.nextObject(Transaction.class);
+        TransactionType transactionType = easyRandom.nextObject(TransactionType.class);
+
+        Wallet wallet = new Wallet();
+        wallet.setName("Kantong");
+        wallet.setBalance(0);
+
+        Transaction transaction1 = new Transaction();
+        transaction1.setDescription("TopUp");
+        transaction1.setTransactionType(transactionType);
+        transaction1.setWallet(wallet);
+
+        when(this.walletRepository.getById(id)).thenReturn(wallet);
+        when(this.transactionService.createTopupTransaction(wallet, transactionDTO)).thenReturn(transaction1);
+//        when(this.typeService.getTransactionTypeById(transactionDTO.getTransaction_type_id())).thenReturn(transactionType);
+//        when(this.walletRepository.save(wallet)).thenReturn(wallet);
+
+        // When
+        var result = this.walletService.topUp(walletId, transactionDTO);
+
+        // Then
+        assertEquals(transaction, result);
     }
 
     @Test
@@ -164,5 +175,7 @@ public class WalletServiceImplTest {
         // Given
         assertEquals(wallet, result);
     }
+
+
 
 }
