@@ -82,12 +82,12 @@ public class WalletServiceImpl implements WalletService {
     }
 
     public Transaction transfer(Long walletId, TransactionDTO transactionDTO) {
-        if(this.getWalletById((long) transactionDTO.getWallet_id()) == null){
+        if(this.getWalletById(transactionDTO.getWallet_id()) == null){
             return null;
         }
 
         Wallet existWalletSender = this.walletRepository.getById(walletId);
-        Wallet existWalletRecipient = this.walletRepository.getById((long) transactionDTO.getWallet_id());
+        Wallet existWalletRecipient = this.walletRepository.getById(transactionDTO.getWallet_id());
 
         if(existWalletSender.getBalance() < transactionDTO.getAmount()){
             return null;
