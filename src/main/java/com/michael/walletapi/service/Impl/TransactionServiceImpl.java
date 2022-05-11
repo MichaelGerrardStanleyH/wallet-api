@@ -44,7 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public Transaction createTransferTransaction(Wallet existWalletSender, Wallet existWalletRecipient, TransactionDTO transactionDTO) {
-        TransactionType existType = this.transactionTypeService.getTransactionTypeById((long) transactionDTO.getTransaction_type_id());
+        TransactionType existType = this.transactionTypeService.getTransactionTypeById(transactionDTO.getTransaction_type_id());
 
         if(existType == null){
             return null;

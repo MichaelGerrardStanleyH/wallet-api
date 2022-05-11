@@ -28,7 +28,7 @@ public class Wallet {
     private User user;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "wallet")
+    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL)
     List<Transaction> transaction;
 
 }

@@ -104,16 +104,16 @@ public class UserController {
     }
 
     @PostMapping("/{id}/wallets")
-    public ResponseEntity<BaseResponse<User>> addWallet(@PathVariable Long id, @RequestBody WalletDTO walletDTO){
-        BaseResponse<User> baseResponse = new BaseResponse<>();
+    public ResponseEntity<BaseResponse<Wallet>> addWallet(@PathVariable Long id, @RequestBody WalletDTO walletDTO){
+        BaseResponse<Wallet> baseResponse = new BaseResponse<>();
 
-        User user = this.userService.addWallet(id, walletDTO);
+        Wallet wallet = this.userService.addWallet(id, walletDTO);
+
 
         baseResponse.setMessage("Success");
         baseResponse.setSuccess(true);
-        baseResponse.setData(user);
+        baseResponse.setData(wallet);
         return ResponseEntity.status(HttpStatus.CREATED).body(baseResponse);
-
     }
 
     @PostMapping("/{userId}/topup/{walletId}")

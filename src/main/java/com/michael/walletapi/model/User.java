@@ -32,9 +32,6 @@ public class User {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    public void addWallet(Wallet wallet){
-        this.wallet.add(wallet);
-    }
 
 
 }

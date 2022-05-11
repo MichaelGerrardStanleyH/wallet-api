@@ -102,19 +102,24 @@ public class UserServiceImpl implements UserService {
         this.userRepository.deleteById(id);
     }
 
-    public User addWallet(Long id, WalletDTO walletDTO) {
-        User existUser = this.userRepository.findById(id).get();
+    public Wallet addWallet(Long id, WalletDTO walletDTO) {
+        User existUser = this.userRepository.getById(id);
 
         Wallet newWallet = this.walletService.addWallet(existUser, walletDTO);
 
-        existUser.addWallet(newWallet);
-
-        return existUser;
+        return newWallet;
     }
 
     public Transaction topUp(Long userId, Long walletId, TransactionDTO transactionDTO) {
         // exception
-        if(this.getUserById(userId) == null && this.walletService.getUsersWallet(walletId, this.getUserById(userId)) == null){
+
+        User user = this.getUserById(userId);
+
+        if(user == null){
+            return null;
+        }
+
+        if(this.walletService.getUsersWallet(walletId, user) == null){
             return null;
         }
 
@@ -123,8 +128,13 @@ public class UserServiceImpl implements UserService {
 
     public Transaction transfer(Long userId, Long walletId, TransactionDTO transactionDTO) {
         // exception
+        User user = this.getUserById(userId);
 
-        if(this.getUserById(userId) == null && this.walletService.getUsersWallet(walletId, this.getUserById(userId)) == null){
+        if(user == null){
+            return null;
+        }
+
+        if(this.walletService.getUsersWallet(walletId, user) == null){
             return null;
         }
 

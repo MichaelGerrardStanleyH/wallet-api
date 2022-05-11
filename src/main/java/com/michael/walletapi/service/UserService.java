@@ -24,7 +24,7 @@ public interface UserService {
 
     public void deleteUser(Long id);
 
-    public User addWallet(Long id, WalletDTO walletDTO);
+    public Wallet addWallet(Long id, WalletDTO walletDTO);
 
     public Transaction topUp(Long userId, Long walletId, TransactionDTO transactionDTO);
 
