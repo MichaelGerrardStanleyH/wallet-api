@@ -151,7 +151,7 @@ public class UserServiceImplTest {
         var result = this.userService.addWallet(id, walletDTO);
 
         // Then
-        assertEquals(user, result);
+        assertEquals(wallet, result);
     }
 
     @Test
