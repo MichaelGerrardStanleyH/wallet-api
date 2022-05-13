@@ -89,7 +89,7 @@ public class WalletServiceImpl implements WalletService {
         Wallet existWalletSender = this.walletRepository.getById(walletId);
         Wallet existWalletRecipient = this.walletRepository.getById(transactionDTO.getWallet_id());
 
-        if(existWalletSender.getBalance() < transactionDTO.getAmount() || existWalletSender.getBalance() == 0.0){
+        if(existWalletSender.getBalance() < transactionDTO.getAmount() || transactionDTO.getAmount() <= 0.0){
             return null;
         }
 

@@ -6,6 +6,7 @@ import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.repository.AddressRepository;
 import com.michael.walletapi.repository.UserRepository;
+import com.michael.walletapi.service.TransactionService;
 import com.michael.walletapi.service.UserService;
 import com.michael.walletapi.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     WalletService walletService;
+
+    @Autowired
+    TransactionService transactionService;
 
     public LocalDateTime getTimeNow(){
         return LocalDateTime.now();
@@ -164,6 +168,13 @@ public class UserServiceImpl implements UserService {
             this.walletService.deleteWalletById(walletId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
+    }
+
+    @Override
+    public Transaction getUsersTransaction(Long userId, Long walletId, Long transactionId) {
+        User existUser = this.getUserById(userId);
+        Wallet existWallet = this.walletService.getUsersWallet(walletId, existUser);
+        return this.transactionService.getUsersTransactionById(transactionId, existWallet);
     }
 }
 

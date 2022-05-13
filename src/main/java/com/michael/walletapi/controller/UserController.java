@@ -133,7 +133,6 @@ public class UserController {
             baseResponse.setSuccess(true);
             return ResponseEntity.status(HttpStatus.OK).body(baseResponse);
         }
-
     }
 
     @PostMapping("/{userId}/transfer/{walletId}")
@@ -198,6 +197,19 @@ public class UserController {
         this.userService.deleteUsersWallet(userId, walletId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{userId}/wallets/{walletId}/transactions/{transactionId}")
+    public ResponseEntity<BaseResponse<Object>> getUsersTransaction(@PathVariable("userId") Long userId, @PathVariable("walletId") Long walletId, @PathVariable("transactionId") Long transactionId){
+        Transaction usersTransaction = this.userService.getUsersTransaction(userId, walletId, transactionId);
+
+        BaseResponse<Object> baseResponse = BaseResponse.builder()
+                .message("Success")
+                .success(true)
+                .data(usersTransaction)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(baseResponse);
     }
 
 }

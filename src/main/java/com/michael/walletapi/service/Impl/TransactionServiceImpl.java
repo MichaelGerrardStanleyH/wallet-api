@@ -2,6 +2,7 @@ package com.michael.walletapi.service.Impl;
 
 import com.michael.walletapi.model.Transaction;
 import com.michael.walletapi.model.TransactionType;
+import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.repository.TransactionRepository;
@@ -22,6 +23,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     public LocalDateTime getTimeNow(){
         return LocalDateTime.now();
+    }
+
+    public Transaction getUsersTransactionById(Long transactionId,Wallet wallet){
+        return this.transactionRepository.findByIdAndWallet(transactionId, wallet);
     }
 
     public Transaction createTopupTransaction(Wallet existWallet, TransactionDTO transactionDTO){

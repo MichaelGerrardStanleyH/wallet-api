@@ -35,4 +35,6 @@ public interface UserService {
     public Wallet getUsersWalletById(Long userId, Long walletId);
 
     public ResponseEntity<Void> deleteUsersWallet(Long userId, Long walletId);
+
+    Transaction getUsersTransaction(Long userId, Long walletId,  Long transactionId);
 }
