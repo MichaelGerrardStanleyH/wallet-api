@@ -15,4 +15,6 @@ public class UserDTO {
     private LocalDateTime created_at;
     private String address;
     private Wallet wallet;
+
+    private String password;
 }

@@ -78,6 +78,11 @@ public class UserController {
         }
     }
 
+    @PostMapping("/token")
+    public ResponseEntity<?> generateToken(@RequestBody UserDTO userDTO){
+        return ResponseEntity.ok(this.userService.generateToken(userDTO));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<BaseResponse<User>> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO){
         BaseResponse<User> baseResponse = new BaseResponse<>();

@@ -1,17 +1,28 @@
 package com.michael.walletapi.service.Impl;
 
 import com.michael.walletapi.model.*;
+import com.michael.walletapi.model.dto.TokenResponse;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.repository.AddressRepository;
 import com.michael.walletapi.repository.UserRepository;
+import com.michael.walletapi.security.JwtProvider;
 import com.michael.walletapi.service.TransactionService;
 import com.michael.walletapi.service.UserService;
 import com.michael.walletapi.service.WalletService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,18 +30,37 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
-    @Autowired
-    UserRepository userRepository;
 
-    @Autowired
-    AddressRepository addressRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    WalletService walletService;
+    private final AddressRepository addressRepository;
 
-    @Autowired
-    TransactionService transactionService;
+
+    private final WalletService walletService;
+
+    private final TransactionService transactionService;
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(@Lazy UserRepository userRepository,
+                           @Lazy AddressRepository addressRepository,
+                           @Lazy WalletService walletService,
+                           @Lazy TransactionService transactionService,
+                           @Lazy AuthenticationManager authenticationManager,
+                           @Lazy JwtProvider jwtProvider,
+                           @Lazy PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
+        this.walletService = walletService;
+        this.transactionService = transactionService;
+        this.authenticationManager = authenticationManager;
+        this.jwtProvider = jwtProvider;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public LocalDateTime getTimeNow(){
         return LocalDateTime.now();
@@ -66,6 +96,9 @@ public class UserServiceImpl implements UserService {
 
         User newUser = User.builder().name(userDTO.getName())
                 .dob(userDTO.getDob())
+                .username(userDTO.getName())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .active(true)
                 .created_at(getTimeNow())
                 .address(savedAddress)
                 .build();
@@ -82,6 +115,28 @@ public class UserServiceImpl implements UserService {
             return savedUser;
         }
 
+    }
+
+    public TokenResponse generateToken(UserDTO req){
+        try{
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            req.getName(),
+                            req.getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtProvider.generateToken(authentication);
+            TokenResponse tokenResponse = new TokenResponse();
+            tokenResponse.setToken(jwt);
+            return tokenResponse;
+        }catch (BadCredentialsException e){
+            log.error("Bad Credential ", e);
+            throw new RuntimeException(e.getMessage(), e);
+        }catch (Exception e){
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     public User updateUser(Long id, UserDTO userDTO) {
@@ -176,5 +231,16 @@ public class UserServiceImpl implements UserService {
         Wallet existWallet = this.walletService.getUsersWallet(walletId, existUser);
         return this.transactionService.getUsersTransactionById(transactionId, existWallet);
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = this.userRepository.getDistinctTopByUsername(username);
+        if(user == null){
+            throw new UsernameNotFoundException("Username Not Found");
+        }
+
+        return user;
+    }
+
 }
 
