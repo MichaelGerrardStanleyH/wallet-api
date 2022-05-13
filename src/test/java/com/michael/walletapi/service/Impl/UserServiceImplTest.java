@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -47,6 +48,9 @@ public class UserServiceImplTest {
 
     @Mock
     AddressRepository addressRepository;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     @Spy
     private ModelMapper mapper = new ModelMapper();

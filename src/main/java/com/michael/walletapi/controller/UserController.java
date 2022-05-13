@@ -4,6 +4,7 @@ import com.michael.walletapi.model.BaseResponse;
 import com.michael.walletapi.model.Transaction;
 import com.michael.walletapi.model.User;
 import com.michael.walletapi.model.Wallet;
+import com.michael.walletapi.model.dto.TokenResponse;
 import com.michael.walletapi.model.dto.TransactionDTO;
 import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
@@ -79,8 +80,23 @@ public class UserController {
     }
 
     @PostMapping("/token")
-    public ResponseEntity<?> generateToken(@RequestBody UserDTO userDTO){
-        return ResponseEntity.ok(this.userService.generateToken(userDTO));
+    public ResponseEntity<BaseResponse<TokenResponse>> generateToken(@RequestBody UserDTO userDTO){
+        BaseResponse<TokenResponse> baseResponse = new BaseResponse<>();
+
+        TokenResponse tokenResponse = this.userService.generateToken(userDTO);
+
+        baseResponse.setData(tokenResponse);
+
+        if(tokenResponse == null ){
+            baseResponse.setMessage("Failed");
+            baseResponse.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
+        }else{
+            baseResponse.setMessage("Success");
+            baseResponse.setSuccess(true);
+            return ResponseEntity.status(HttpStatus.CREATED).body(baseResponse);
+        }
+
     }
 
     @PutMapping("/{id}")
