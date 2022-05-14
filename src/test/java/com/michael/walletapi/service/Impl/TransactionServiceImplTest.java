@@ -8,15 +8,13 @@ import com.michael.walletapi.repository.TransactionRepository;
 import org.jeasy.random.EasyRandom;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.platform.commons.annotation.Testable;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
 @RunWith(SpringRunner.class)

@@ -37,7 +37,6 @@ public class UserServiceImpl implements UserService {
 
     private final AddressRepository addressRepository;
 
-
     private final WalletService walletService;
 
     private final TransactionService transactionService;

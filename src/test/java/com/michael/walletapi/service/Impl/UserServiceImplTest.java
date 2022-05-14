@@ -9,6 +9,7 @@ import com.michael.walletapi.model.dto.UserDTO;
 import com.michael.walletapi.model.dto.WalletDTO;
 import com.michael.walletapi.repository.AddressRepository;
 import com.michael.walletapi.repository.UserRepository;
+import com.michael.walletapi.service.TransactionService;
 import org.jeasy.random.EasyRandom;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,14 +21,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -45,6 +47,9 @@ public class UserServiceImplTest {
 
     @Mock
     WalletServiceImpl walletService;
+
+    @Mock
+    TransactionService transactionService;
 
     @Mock
     AddressRepository addressRepository;
@@ -102,6 +107,7 @@ public class UserServiceImplTest {
         Wallet wallet = easyRandom.nextObject(Wallet.class);
 
 
+        when(this.addressRepository.save(any())).thenReturn(address);
         when(this.userRepository.save(any())).thenReturn(user);
         when(this.walletService.createWallet(user)).thenReturn(wallet);
 
@@ -243,4 +249,37 @@ public class UserServiceImplTest {
         assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).build(), result);
     }
 
+    @Test
+    public void loadUserByUsername_willSuccess(){
+        // Given
+        String username = easyRandom.toString();
+        User user = easyRandom.nextObject(User.class);
+        UserDetails userDetails = this.mapper.map(user, UserDetails.class);
+
+        doReturn(userDetails).when(this.userRepository).getDistinctTopByUsername(username);
+
+        // When
+        var result = this.userService.loadUserByUsername(username);
+
+        // Then
+        assertEquals(userDetails, result);
+    }
+
+    @Test
+    public void getUsersTransaction_willSuccess(){
+        // Given
+        User user = easyRandom.nextObject(User.class);
+        Wallet wallet = easyRandom.nextObject(Wallet.class);
+        Transaction transaction = easyRandom.nextObject(Transaction.class);
+
+        doReturn(user).when(this.userService).getUserById(id);
+        doReturn(wallet).when(this.walletService).getUsersWallet(id, user);
+        doReturn(transaction).when(this.transactionService).getUsersTransactionById(id, wallet);
+
+        // When
+        var result = this.userService.getUsersTransaction(id, id, id);
+
+        // Then
+        assertEquals(transaction, result);
+    }
 }
